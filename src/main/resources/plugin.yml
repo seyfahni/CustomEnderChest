@@ -1,11 +1,11 @@
 name: CustomEnderChest
-main: net.craftersland.customenderchest.EnderChest
-version: 1.12.2
+main: '${basePackage}.EnderChest'
+version: '${version}'
 author: CraftersLand
 website: www.craftersland.net
 load: STARTUP
 softdepend: [ProtocolLib]
-api-version: 1.13
+api-version: '1.13'
 commands:
     ec:
         description: The short command.
