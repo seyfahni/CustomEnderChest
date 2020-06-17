@@ -28,7 +28,7 @@ public class EnderChest extends JavaPlugin {
 	private static final Pattern VERSION_PATTERN = Pattern.compile("(?<major>\\d+)\\.(?<minor>\\d+)(?:\\.(?<patch>\\d+))?");
 
 	public static Logger log;
-	public Map<Inventory, UUID> admin = new HashMap<Inventory, UUID>();
+	public Map<Inventory, UUID> admin = new HashMap<>();
 	public static boolean is19Server = true;
 	public static boolean is13Server = false;
 	public static String pluginName = "CustomEnderChest";
@@ -48,7 +48,7 @@ public class EnderChest extends JavaPlugin {
 	        configHandler = new ConfigHandler(this);
 	        checkForModdedNBTsupport();
 	        enderchestUtils = new EnderChestUtils(this);
-	        if (configHandler.getString("database.typeOfDatabase").equalsIgnoreCase("mysql") == true) {
+	        if (configHandler.getString("database.typeOfDatabase").equalsIgnoreCase("mysql")) {
 	        	log.info("Using MySQL database for data.");
 	        	mysqlSetup = new MysqlSetup(this);
 	        	storageInterface = new MysqlStorage(this);
@@ -142,7 +142,7 @@ public class EnderChest extends JavaPlugin {
 		}
 		
 		private void checkForModdedNBTsupport() {
-			if (configHandler.getBoolean("settings.modded-NBT-data-support") == true) {
+			if (configHandler.getBoolean("settings.modded-NBT-data-support")) {
 				if (configHandler.getString("database.typeOfDatabase").equalsIgnoreCase("mysql")) {
 					if (Bukkit.getPluginManager().getPlugin("ProtocolLib") != null) {
 						ms = new ModdedSerializer(this);
