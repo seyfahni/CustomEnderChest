@@ -7,6 +7,7 @@ import java.util.UUID;
 import java.util.logging.Logger;
 
 import net.craftersland.customenderchest.commands.FileToMysqlCmd;
+import net.craftersland.customenderchest.sound.*;
 import net.craftersland.customenderchest.storage.FlatFileStorage;
 import net.craftersland.customenderchest.storage.MysqlSetup;
 import net.craftersland.customenderchest.storage.MysqlStorage;
@@ -50,13 +51,21 @@ public class EnderChest extends JavaPlugin {
 	        } else {
 	        	log.info("Using FlatFile system for data. IMPORTANT! We recommend MySQL.");
 	        	File pluginFolder = new File("plugins" + System.getProperty("file.separator") + pluginName + System.getProperty("file.separator") + "PlayerData");
-	    		if (pluginFolder.exists() == false) {
+	    		if (!pluginFolder.exists()) {
 	        		pluginFolder.mkdir();
 	        	}
 		      	storageInterface = new FlatFileStorage(this);	
 	        }
 	        dH = new DataHandler(this);
-	        sH = new SoundHandler(this);
+	        if (configHandler.getBoolean("settings.disable-sounds")) {
+	        	sH = new DisabledSoundHandler();
+			} else if (is13Server) {
+	        	sH = new Spigot13SoundHandler();
+			} else if (is19Server) {
+	        	sH = new Spigot9SoundHandler();
+			} else {
+	        	sH = new SpigotLegacySoundHandler();
+			}
 	        ftmc = new FileToMysqlCmd(this);
 	    	PluginManager pm = getServer().getPluginManager();
 	    	pm.registerEvents(new PlayerHandler(this), this);
