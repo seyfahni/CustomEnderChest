@@ -22,8 +22,8 @@ import org.bukkit.inventory.ItemStack;
 
 public class PlayerHandler implements Listener {
 	
-    private EnderChest enderchest;
-    private Set<Player> interactCooldown = new HashSet<Player>();
+    private final EnderChest enderchest;
+    private final Set<Player> interactCooldown = new HashSet<>();
 	
 	public PlayerHandler(EnderChest enderchest) {
 		this.enderchest = enderchest;
@@ -68,9 +68,9 @@ public class PlayerHandler implements Listener {
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onPlayerInteract(final PlayerInteractEvent e) {
 		if (e.getClickedBlock() != null) {
-			if (e.isCancelled() == false) {
+			if (!e.isCancelled()) {
 				if (e.getClickedBlock().getType() == Material.ENDER_CHEST) {
-					if (enderchest.getConfigHandler().getBoolean("settings.disable-enderchest-click") == false) {
+					if (!enderchest.getConfigHandler().getBoolean("settings.disable-enderchest-click")) {
 						if (e.getAction() == Action.RIGHT_CLICK_BLOCK) {
 							if (enderchest.getDataHandler().hasJoinDelay(e.getPlayer())) {
 								e.setCancelled(true);
@@ -78,20 +78,20 @@ public class PlayerHandler implements Listener {
 								enderchest.getSoundHandler().sendFailedSound(e.getPlayer());
 								return;
 							}
-							if (interactCooldown.contains(e.getPlayer()) == false) {
-								if (e.getPlayer().isSneaking() == false) {
+							if (!interactCooldown.contains(e.getPlayer())) {
+								if (!e.getPlayer().isSneaking()) {
 									//e.setCancelled(true);
 									addInteractCooldown(e.getPlayer());
 									enderchest.getEnderChestUtils().openMenu(e.getPlayer());
 								} else {
-									if (EnderChest.is19Server == false) {
-										if (hasItemInHand(e.getPlayer().getItemInHand()) == false) {
+									if (!EnderChest.is19Server) {
+										if (hasEmptyHand(e.getPlayer().getItemInHand())) {
 											//e.setCancelled(true);
 											addInteractCooldown(e.getPlayer());
 											enderchest.getEnderChestUtils().openMenu(e.getPlayer());
 										}
 									} else {
-										if (hasItemInHand(e.getPlayer().getInventory().getItemInMainHand()) == false && hasItemInHand(e.getPlayer().getInventory().getItemInOffHand()) == false) {
+										if (hasEmptyHand(e.getPlayer().getInventory().getItemInMainHand()) && hasEmptyHand(e.getPlayer().getInventory().getItemInOffHand())) {
 											//e.setCancelled(true);
 											addInteractCooldown(e.getPlayer());
 											enderchest.getEnderChestUtils().openMenu(e.getPlayer());
@@ -119,15 +119,12 @@ public class PlayerHandler implements Listener {
 		}, 20L);
 	}
 	
-	private boolean hasItemInHand(ItemStack item) {
+	private boolean hasEmptyHand(ItemStack item) {
 		if (item == null) {
-			return false;
+			return true;
 		} else {
-			if (item.getType() == Material.AIR) {
-				return false;
-			}
+			return item.getType() == Material.AIR;
 		}
-		return true;
 	}
 	
 	private void saveEnderchest(final Inventory inv, final Player p, final UUID u) {
@@ -150,32 +147,29 @@ public class PlayerHandler implements Listener {
 	@EventHandler
 	public void onInventoryClose(InventoryCloseEvent e) {
 		Player p = (Player) e.getPlayer();
-		if (p != null) {
-			if (e.getInventory() != null) {
-				try {
-					if (enderchest.getDataHandler().isLiveEnderchest(e.getInventory()) == true) {
-						enderchest.getSoundHandler().sendEnderchestCloseSound(p);
-						if (enderchest.admin.containsKey(e.getInventory()) == true) {
-							UUID u = enderchest.admin.get(e.getInventory());
-							if (u.equals(e.getPlayer().getUniqueId()) == false) {
-								enderchest.admin.remove(e.getInventory());
-							}
-							//enderchest.getDataHandler().setData(u, e.getInventory());
-							//saveEnderchest(e.getInventory(), (Player) e.getPlayer(), u);
-						} else {
-							enderchest.getDataHandler().setData(e.getPlayer().getUniqueId(), e.getInventory());
-							saveEnderchest(e.getInventory(), (Player) e.getPlayer(), null);
-						}
-					} else if (enderchest.admin.containsKey(e.getInventory()) == true) {
-						enderchest.getSoundHandler().sendEnderchestCloseSound(p);
-						saveEnderchest(e.getInventory(), (Player) e.getPlayer(), enderchest.admin.get(e.getInventory()));
+		e.getInventory();
+		try {
+			if (enderchest.getDataHandler().isLiveEnderchest(e.getInventory())) {
+				enderchest.getSoundHandler().sendEnderchestCloseSound(p);
+				if (enderchest.admin.containsKey(e.getInventory())) {
+					UUID u = enderchest.admin.get(e.getInventory());
+					if (!u.equals(e.getPlayer().getUniqueId())) {
 						enderchest.admin.remove(e.getInventory());
 					}
-				} catch (Exception ex) {
-					EnderChest.log.severe("Error saving enderchest data for player: " + p.getName() + " . Error: " + ex.getMessage());
-					ex.printStackTrace();
+					//enderchest.getDataHandler().setData(u, e.getInventory());
+					//saveEnderchest(e.getInventory(), (Player) e.getPlayer(), u);
+				} else {
+					enderchest.getDataHandler().setData(e.getPlayer().getUniqueId(), e.getInventory());
+					saveEnderchest(e.getInventory(), (Player) e.getPlayer(), null);
 				}
+			} else if (enderchest.admin.containsKey(e.getInventory())) {
+				enderchest.getSoundHandler().sendEnderchestCloseSound(p);
+				saveEnderchest(e.getInventory(), (Player) e.getPlayer(), enderchest.admin.get(e.getInventory()));
+				enderchest.admin.remove(e.getInventory());
 			}
+		} catch (Exception ex) {
+			EnderChest.log.severe("Error saving enderchest data for player: " + p.getName() + " . Error: " + ex.getMessage());
+			ex.printStackTrace();
 		}
 	}
 
