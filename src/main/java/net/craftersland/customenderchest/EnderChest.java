@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import net.craftersland.customenderchest.commands.FileToMysqlCmd;
 import net.craftersland.customenderchest.sound.*;
@@ -22,7 +24,9 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class EnderChest extends JavaPlugin {
-	
+
+	private static final Pattern VERSION_PATTERN = Pattern.compile("(?<major>\\d+)\\.(?<minor>\\d+)(?:\\.(?<patch>\\d+))?");
+
 	public static Logger log;
 	public Map<Inventory, UUID> admin = new HashMap<Inventory, UUID>();
 	public static boolean is19Server = true;
@@ -92,55 +96,48 @@ public class EnderChest extends JavaPlugin {
 		}
 		
 		private boolean getMcVersion() {
-			String[] serverVersion = Bukkit.getBukkitVersion().split("-");
-		    String version = serverVersion[0];
-		    
-		    if (version.matches("1.7.10") || version.matches("1.7.9") || version.matches("1.7.5") || version.matches("1.7.2") || version.matches("1.8.8") || version.matches("1.8.3") || version.matches("1.8.4") || version.matches("1.8")) {
-		    	is19Server = false;
-		    	is13Server = false;
-		    	log.info("Compatible server version detected: " + version);
-		    	return true;
-		    } else if (version.matches("1.9") || version.matches("1.9.1") || version.matches("1.9.2") || version.matches("1.9.3") || version.matches("1.9.4")) {
-		    	is19Server = true;
-		    	is13Server = false;
-		    	log.info("Compatible server version detected: " + version);
-		    	return true;
-		    } else if (version.matches("1.10") || version.matches("1.10.1") || version.matches("1.10.2")) {
-		    	is19Server = true;
-		    	is13Server = false;
-		    	log.info("Compatible server version detected: " + version);
-		    	return true;
-		    } else if (version.matches("1.11") || version.matches("1.11.1") || version.matches("1.11.2")) {
-		    	is19Server = true;
-		    	is13Server = false;
-		    	log.info("Compatible server version detected: " + version);
-		    	return true;
-		    } else if (version.matches("1.12") || version.matches("1.12.1") || version.matches("1.12.2")) {
-		    	is19Server = true;
-		    	is13Server = false;
-		    	log.info("Compatible server version detected: " + version);
-		    	return true;
-		    } else if (version.matches("1.13") || version.matches("1.13.1") || version.matches("1.13.2")) {
-		    	is19Server = true;
-		    	is13Server = true;
-		    	log.info("Compatible server version detected: " + version);
-		    	return true;
-		    } else if (version.matches("1.14") || version.matches("1.14.1") || version.matches("1.14.2") || version.matches("1.14.3") || version.matches("1.14.4")) {
-		    	is19Server = true;
-		    	is13Server = true;
-		    	log.info("Compatible server version detected: " + version);
-		    	return true;
-		    } else if (version.matches("1.15") || version.matches("1.15.1") || version.matches("1.15.2")) {
-		    	is19Server = true;
-		    	is13Server = true;
-		    	log.info("Compatible server version detected: " + version);
-		    	return true;
-		    } else {
-		    	//Default fallback to 1.15 API
-		    	is19Server = true;
-		    	is13Server = true;
-		    	log.info("Incompatible server version detected: " + version + " . Running into 1.15 API mode.");
-		    }
+			String version = Bukkit.getBukkitVersion().split("-")[0];
+
+			Matcher versionMatcher = VERSION_PATTERN.matcher(version);
+			if (!versionMatcher.matches()) {
+				is19Server = true;
+				is13Server = true;
+				log.warning("Unable to identify server version: " + version);
+				log.warning("Attempting to run in 1.13 - 1.15 API mode.");
+				return false;
+			}
+			int major = Integer.parseInt(versionMatcher.group("major"));
+			int minor = Integer.parseInt(versionMatcher.group("minor"));
+
+			if (major == 1) {
+				if (minor < 7) {
+					is19Server = false;
+					is13Server = false;
+					log.warning("Very old and unsupported server version detected: " + version);
+					log.warning("Attempting to run in legacy (pre 1.9) API mode.");
+					return false;
+				} else if (minor < 9) {
+					is19Server = false;
+					is13Server = false;
+					log.info("Compatible server version detected: " + version);
+					return true;
+				} else if (minor < 13) {
+					is19Server = true;
+					is13Server = false;
+					log.info("Compatible server version detected: " + version);
+					return true;
+				} else if (minor < 16) {
+					is19Server = true;
+					is13Server = true;
+					log.info("Compatible server version detected: " + version);
+					return true;
+				}
+			}
+
+			is19Server = true;
+			is13Server = true;
+			log.warning("Unknown server version detected: " + version);
+			log.warning("Attempting to run in 1.13 - 1.15 API mode.");
 		    return false;
 		}
 		
