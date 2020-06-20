@@ -12,9 +12,9 @@ import org.bukkit.inventory.Inventory;
 
 public class DataHandler {
 	
-	private Map<UUID, Inventory> liveData = new HashMap<UUID, Inventory>();
-	private Set<Player> joinDelay = new HashSet<Player>();
-	private EnderChest pl;
+	private final Map<UUID, Inventory> liveData = new HashMap<>();
+	private final Set<Player> joinDelay = new HashSet<>();
+	private final EnderChest pl;
 	
 	public DataHandler(EnderChest plugin) {
 		this.pl = plugin;
@@ -54,14 +54,14 @@ public class DataHandler {
 	}
 	
 	public void loadPlayerFromStorage(Player p) {
-		if (p.isOnline() == true) {
+		if (p.isOnline()) {
 			int size = pl.getEnderChestUtils().getSize(p);
 			if (size == 0) {
 				size = 9;
 			}
 			String enderChestTitle = pl.getEnderChestUtils().getTitle(p);
 			Inventory inv = Bukkit.getServer().createInventory(p, size, enderChestTitle);
-			if (pl.getStorageInterface().hasDataFile(p.getUniqueId()) == true) {
+			if (pl.getStorageInterface().hasDataFile(p.getUniqueId())) {
 				pl.getStorageInterface().loadEnderChest(p, inv);
 			}
 			setData(p.getUniqueId(), inv);
@@ -69,7 +69,7 @@ public class DataHandler {
 	}
 	
 	private void loadAlreadyOnlinePlayers() {
-		if (Bukkit.getOnlinePlayers().isEmpty() == false) {
+		if (!Bukkit.getOnlinePlayers().isEmpty()) {
 			EnderChest.log.info("Loading data for online players...");
 			for (Player p : Bukkit.getOnlinePlayers()) {
 				loadPlayerFromStorage(p);

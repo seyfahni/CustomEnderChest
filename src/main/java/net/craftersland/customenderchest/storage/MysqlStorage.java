@@ -14,12 +14,11 @@ import net.craftersland.customenderchest.EnderChest;
 import net.craftersland.customenderchest.utils.EncodingUtil;
 
 public class MysqlStorage implements StorageInterface {
-	
-	private EnderChest enderchest;
-	
+
+	private final EnderChest enderchest;
+
 	public MysqlStorage(EnderChest enderchest) {
 		this.enderchest = enderchest;
-		
 	}
 	
 	@Override
@@ -82,7 +81,7 @@ public class MysqlStorage implements StorageInterface {
 	        preparedStatement.setString(2, p.getName() + "");
 	        preparedStatement.setString(3, "none");
 	        preparedStatement.setInt(4, 0);
-	        preparedStatement.setString(5, String.valueOf(System.currentTimeMillis()) + "");
+	        preparedStatement.setString(5, System.currentTimeMillis() + "");
 	        preparedStatement.executeUpdate();
 	        return true;
 	      } catch (SQLException e) {
