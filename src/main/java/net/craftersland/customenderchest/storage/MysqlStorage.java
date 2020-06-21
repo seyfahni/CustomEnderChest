@@ -27,7 +27,7 @@ public class MysqlStorage implements StorageInterface {
 		PreparedStatement preparedUpdateStatement = null;
 		try {	 
 	        String sql = "SELECT `player_uuid` FROM `" + enderchest.getConfigHandler().getString("database.mysql.tableName") + "` WHERE `player_uuid` = ?";
-	        preparedUpdateStatement = enderchest.getMysqlSetup().getConnection().prepareStatement(sql);
+	        preparedUpdateStatement = enderchest.getDatabaseSetup().getConnection().prepareStatement(sql);
 	        preparedUpdateStatement.setString(1, player.toString());
 	        result = preparedUpdateStatement.executeQuery();
 	        while (result.next()) {
@@ -55,7 +55,7 @@ public class MysqlStorage implements StorageInterface {
 		PreparedStatement preparedStatement = null;
 		try {	 
 			String sql = "DELETE FROM `" + enderchest.getConfigHandler().getString("database.mysql.tableName") + "` WHERE `player_uuid` =?";
-			preparedStatement = enderchest.getMysqlSetup().getConnection().prepareStatement(sql);
+			preparedStatement = enderchest.getDatabaseSetup().getConnection().prepareStatement(sql);
 			preparedStatement.setString(1, String.valueOf(player));
 			preparedStatement.executeUpdate();
 	        return true;
@@ -76,7 +76,7 @@ public class MysqlStorage implements StorageInterface {
 		PreparedStatement preparedStatement = null;
 		try {			 
 	        String sql = "INSERT INTO `" + enderchest.getConfigHandler().getString("database.mysql.tableName") + "`(`player_uuid`, `player_name`, `enderchest_data`, `size`, `last_seen`) " + "VALUES(?, ?, ?, ?, ?)";
-	        preparedStatement = enderchest.getMysqlSetup().getConnection().prepareStatement(sql);
+	        preparedStatement = enderchest.getDatabaseSetup().getConnection().prepareStatement(sql);
 	        preparedStatement.setString(1, uuid.toString());
 	        preparedStatement.setString(2, p.getName() + "");
 	        preparedStatement.setString(3, "none");
@@ -107,7 +107,7 @@ public class MysqlStorage implements StorageInterface {
 		int storageSize = loadSize(uuid);
 		try {        	
 			String updateSqlExp = "UPDATE `" + enderchest.getConfigHandler().getString("database.mysql.tableName") + "` " + "SET `enderchest_data` = ?" + ", `size` = ?" + " WHERE `player_uuid` = ?";
-			preparedUpdateStatement = enderchest.getMysqlSetup().getConnection().prepareStatement(updateSqlExp);
+			preparedUpdateStatement = enderchest.getDatabaseSetup().getConnection().prepareStatement(updateSqlExp);
 			if (endInv.getSize() >= storageSize) {
 				preparedUpdateStatement.setString(1, encodeInventory(endInv, uuid.toString()));
 				preparedUpdateStatement.setInt(2, endInv.getSize());
@@ -141,7 +141,7 @@ public class MysqlStorage implements StorageInterface {
 		PreparedStatement preparedStatement = null;
 		try {			 
 	        String sql = "INSERT INTO `" + enderchest.getConfigHandler().getString("database.mysql.tableName") + "`(`player_uuid`, `player_name`, `enderchest_data`, `size`, `last_seen`) " + "VALUES(?, ?, ?, ?, ?)";
-	        preparedStatement = enderchest.getMysqlSetup().getConnection().prepareStatement(sql);
+	        preparedStatement = enderchest.getDatabaseSetup().getConnection().prepareStatement(sql);
 	        preparedStatement.setString(1, uuid.toString());
 	        preparedStatement.setString(2, playerName);
 	        preparedStatement.setString(3, encodeInventory(endInv, uuid.toString()));
@@ -170,7 +170,7 @@ public class MysqlStorage implements StorageInterface {
 		int storageSize = loadSize(p.getUniqueId());
 		try {        	
 			String updateSqlExp = "UPDATE `" + enderchest.getConfigHandler().getString("database.mysql.tableName") + "` " + "SET `player_name` = ?" + ", `enderchest_data` = ?" + ", `size` = ?" + ", `last_seen` = ?" + " WHERE `player_uuid` = ?";
-			preparedUpdateStatement = enderchest.getMysqlSetup().getConnection().prepareStatement(updateSqlExp);
+			preparedUpdateStatement = enderchest.getDatabaseSetup().getConnection().prepareStatement(updateSqlExp);
 			preparedUpdateStatement.setString(1, p.getName());
 			if (endInv.getSize() >= storageSize) {
 				preparedUpdateStatement.setString(2, encodeInventory(endInv, p.getName()));
@@ -214,7 +214,7 @@ public class MysqlStorage implements StorageInterface {
 		ResultSet result = null;
 		try {	 
 	        String sql = "SELECT * FROM `" + enderchest.getConfigHandler().getString("database.mysql.tableName") + "` WHERE `player_uuid` = ?";
-	        preparedUpdateStatement = enderchest.getMysqlSetup().getConnection().prepareStatement(sql);
+	        preparedUpdateStatement = enderchest.getDatabaseSetup().getConnection().prepareStatement(sql);
 	        preparedUpdateStatement.setString(1, uuid.toString());
 	        result = preparedUpdateStatement.executeQuery();
 	        while (result.next()) {
@@ -255,7 +255,7 @@ public class MysqlStorage implements StorageInterface {
 		ResultSet result = null;
 		try {	 
 	        String sql = "SELECT * FROM `" + enderchest.getConfigHandler().getString("database.mysql.tableName") + "` WHERE `player_uuid` = ?";
-	        preparedUpdateStatement = enderchest.getMysqlSetup().getConnection().prepareStatement(sql);
+	        preparedUpdateStatement = enderchest.getDatabaseSetup().getConnection().prepareStatement(sql);
 	        preparedUpdateStatement.setString(1, p.getUniqueId().toString());
 	        result = preparedUpdateStatement.executeQuery();
 	        while (result.next()) {
@@ -331,7 +331,7 @@ public class MysqlStorage implements StorageInterface {
 		PreparedStatement preparedUpdateStatement = null;
 		try {        	
 			String updateSqlExp = "UPDATE `" + enderchest.getConfigHandler().getString("database.mysql.tableName") + "` " + "SET `enderchest_data` = ?" + ", `size` = ?" + ", `last_seen` = ?" + " WHERE `player_name` = ?";
-			preparedUpdateStatement = enderchest.getMysqlSetup().getConnection().prepareStatement(updateSqlExp);
+			preparedUpdateStatement = enderchest.getDatabaseSetup().getConnection().prepareStatement(updateSqlExp);
 			preparedUpdateStatement.setString(1, encodeInventory(Bukkit.getServer().createInventory(null, chestSize), playerName));
 			preparedUpdateStatement.setInt(2, chestSize);
 			preparedUpdateStatement.setString(3, String.valueOf(System.currentTimeMillis()));
@@ -377,7 +377,7 @@ public class MysqlStorage implements StorageInterface {
 		ResultSet result = null;
 		try {	 
 	        String sql = "SELECT `enderchest_data` FROM `" + enderchest.getConfigHandler().getString("database.mysql.tableName") + "` WHERE `player_uuid` = ?";
-	        preparedUpdateStatement = enderchest.getMysqlSetup().getConnection().prepareStatement(sql);
+	        preparedUpdateStatement = enderchest.getDatabaseSetup().getConnection().prepareStatement(sql);
 	        preparedUpdateStatement.setString(1, uuid.toString());
 	        result = preparedUpdateStatement.executeQuery();
 	        while (result.next()) {
@@ -408,7 +408,7 @@ public class MysqlStorage implements StorageInterface {
 		ResultSet result = null;
 		try {	 
 	        String sql = "SELECT `player_name` FROM `" + enderchest.getConfigHandler().getString("database.mysql.tableName") + "` WHERE `player_uuid` = ?";
-	        preparedUpdateStatement = enderchest.getMysqlSetup().getConnection().prepareStatement(sql);
+	        preparedUpdateStatement = enderchest.getDatabaseSetup().getConnection().prepareStatement(sql);
 	        preparedUpdateStatement.setString(1, uuid.toString());
 	        result = preparedUpdateStatement.executeQuery();
 	        while (result.next()) {
@@ -439,7 +439,7 @@ public class MysqlStorage implements StorageInterface {
 		ResultSet result = null;
 		try {	 
 	        String sql = "SELECT `size` FROM `" + enderchest.getConfigHandler().getString("database.mysql.tableName") + "` WHERE `player_uuid` = ?";
-	        preparedUpdateStatement = enderchest.getMysqlSetup().getConnection().prepareStatement(sql);
+	        preparedUpdateStatement = enderchest.getDatabaseSetup().getConnection().prepareStatement(sql);
 	        preparedUpdateStatement.setString(1, uuid.toString());
 	        result = preparedUpdateStatement.executeQuery();
 	        while (result.next()) {

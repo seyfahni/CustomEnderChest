@@ -38,7 +38,7 @@ public class EnderChest extends JavaPlugin {
 	private static StorageInterface storageInterface;
 	private static EnderChestUtils enderchestUtils;
 	private static DataHandler dH;
-	private static DatabaseSetup mysqlSetup;
+	private static DatabaseSetup databaseSetup;
 	private static SoundHandler sH;
 	private static ModdedSerializer ms;
 	private static FileToMysqlCmd ftmc;
@@ -51,7 +51,7 @@ public class EnderChest extends JavaPlugin {
 	        enderchestUtils = new EnderChestUtils(this);
 	        if (configHandler.getString("database.typeOfDatabase").equalsIgnoreCase("mysql")) {
 	        	log.info("Using MySQL database for data.");
-	        	mysqlSetup = new MysqlSetup(this);
+	        	databaseSetup = new MysqlSetup(this);
 	        	storageInterface = new MysqlStorage(this);
 	        } else {
 	        	log.info("Using FlatFile system for data. IMPORTANT! We recommend MySQL.");
@@ -85,7 +85,7 @@ public class EnderChest extends JavaPlugin {
 		public void onDisable() {
 			Bukkit.getScheduler().cancelTasks(this);
 			if (configHandler.getString("database.typeOfDatabase").equalsIgnoreCase("mysql")) {
-				mysqlSetup.close();
+				databaseSetup.close();
 			}
 			log.info("Cleaning internal data...");
 			dH.clearLiveData();
@@ -163,8 +163,8 @@ public class EnderChest extends JavaPlugin {
 		public EnderChestUtils getEnderChestUtils() {
 			return enderchestUtils;
 		}
-		public DatabaseSetup getMysqlSetup() {
-			return mysqlSetup;
+		public DatabaseSetup getDatabaseSetup() {
+			return databaseSetup;
 		}
 		public SoundHandler getSoundHandler() {
 			return sH;
