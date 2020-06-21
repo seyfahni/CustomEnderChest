@@ -11,7 +11,8 @@ import java.util.regex.Pattern;
 import net.craftersland.customenderchest.commands.FileToMysqlCmd;
 import net.craftersland.customenderchest.sound.*;
 import net.craftersland.customenderchest.storage.FlatFileStorage;
-import net.craftersland.customenderchest.storage.MysqlSetup;
+import net.craftersland.customenderchest.storage.database.DatabaseSetup;
+import net.craftersland.customenderchest.storage.database.MysqlSetup;
 import net.craftersland.customenderchest.storage.MysqlStorage;
 import net.craftersland.customenderchest.storage.StorageInterface;
 import net.craftersland.customenderchest.utils.EnderChestUtils;
@@ -37,7 +38,7 @@ public class EnderChest extends JavaPlugin {
 	private static StorageInterface storageInterface;
 	private static EnderChestUtils enderchestUtils;
 	private static DataHandler dH;
-	private static MysqlSetup mysqlSetup;
+	private static DatabaseSetup mysqlSetup;
 	private static SoundHandler sH;
 	private static ModdedSerializer ms;
 	private static FileToMysqlCmd ftmc;
@@ -46,7 +47,7 @@ public class EnderChest extends JavaPlugin {
 			log = getLogger();
 			getMcVersion();	    	
 	        configHandler = new ConfigHandler(this);
-	        checkForModdedNBTsupport();
+	        checkForModdedNbtSupport();
 	        enderchestUtils = new EnderChestUtils(this);
 	        if (configHandler.getString("database.typeOfDatabase").equalsIgnoreCase("mysql")) {
 	        	log.info("Using MySQL database for data.");
@@ -84,10 +85,7 @@ public class EnderChest extends JavaPlugin {
 		public void onDisable() {
 			Bukkit.getScheduler().cancelTasks(this);
 			if (configHandler.getString("database.typeOfDatabase").equalsIgnoreCase("mysql")) {
-				if (mysqlSetup.getConnection() != null) {
-					log.info("Closing database connection...");
-					mysqlSetup.closeDatabase();
-				}
+				mysqlSetup.close();
 			}
 			log.info("Cleaning internal data...");
 			dH.clearLiveData();
@@ -141,7 +139,7 @@ public class EnderChest extends JavaPlugin {
 		    return false;
 		}
 		
-		private void checkForModdedNBTsupport() {
+		private void checkForModdedNbtSupport() {
 			if (configHandler.getBoolean("settings.modded-NBT-data-support")) {
 				if (configHandler.getString("database.typeOfDatabase").equalsIgnoreCase("mysql")) {
 					if (Bukkit.getPluginManager().getPlugin("ProtocolLib") != null) {
@@ -165,7 +163,7 @@ public class EnderChest extends JavaPlugin {
 		public EnderChestUtils getEnderChestUtils() {
 			return enderchestUtils;
 		}
-		public MysqlSetup getMysqlSetup() {
+		public DatabaseSetup getMysqlSetup() {
 			return mysqlSetup;
 		}
 		public SoundHandler getSoundHandler() {

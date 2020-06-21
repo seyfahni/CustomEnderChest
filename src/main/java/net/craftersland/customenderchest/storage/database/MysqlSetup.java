@@ -1,4 +1,4 @@
-package net.craftersland.customenderchest.storage;
+package net.craftersland.customenderchest.storage.database;
 
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
@@ -7,15 +7,16 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Properties;
+import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
 
 import net.craftersland.customenderchest.EnderChest;
 
-public class MysqlSetup {
+public class MysqlSetup implements DatabaseSetup {
 	
 	private Connection conn = null;
-	private EnderChest enderchest;
+	private final EnderChest enderchest;
 	private boolean tablesChecked = false;
 	
 	public MysqlSetup(EnderChest enderchest) {
@@ -30,27 +31,17 @@ public class MysqlSetup {
 	}
 	
 	private void tableMaintenance(long inactiveTime, Connection conn, String tableName) {
-		PreparedStatement preparedStatement = null;
-		try {
-			String sql = "DELETE FROM `" + tableName + "` WHERE `last_seen` < ?";
-			preparedStatement = conn.prepareStatement(sql);
+		String sql = "DELETE FROM `" + tableName + "` WHERE `last_seen` < ?";
+		try (PreparedStatement preparedStatement = conn.prepareStatement(sql)) {
 			preparedStatement.setString(1, String.valueOf(inactiveTime));
 			preparedStatement.execute();
 		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-			try {
-				if (preparedStatement != null) {
-					preparedStatement.close();
-				}
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
+			EnderChest.log.log(Level.SEVERE, "Could not execute database maintenance task!", e);
 		}
 	}
 	
 	private void databaseMaintenanceTask() {
-		if (enderchest.getConfigHandler().getBoolean("database.mysql.removeOldUsers.enabled") == true) {
+		if (enderchest.getConfigHandler().getBoolean("database.mysql.removeOldUsers.enabled")) {
 			Bukkit.getScheduler().runTaskLaterAsynchronously(enderchest, new Runnable() {
 
 				@Override
@@ -86,38 +77,24 @@ public class MysqlSetup {
             //Connect to database
             conn = DriverManager.getConnection("jdbc:mysql://" + enderchest.getConfigHandler().getString("database.mysql.host") + ":" + enderchest.getConfigHandler().getString("database.mysql.port") + "/" + enderchest.getConfigHandler().getString("database.mysql.databaseName"), properties);
             EnderChest.log.info("Database connection established!");
-            if (tablesChecked == false) {
+            if (!tablesChecked) {
             	setupTables();
             }
           } catch (ClassNotFoundException e) {
-        	  EnderChest.log.severe("Could not locate drivers for mysql! Error: " + e.getMessage());
+        	  EnderChest.log.log(Level.SEVERE, "Could not locate drivers for mysql!", e);
           } catch (SQLException e) {
-        	  EnderChest.log.severe("Could not connect to mysql database! Error: " + e.getMessage());
-          } catch (Exception ex) {
-        	  EnderChest.log.severe("Could not connect to mysql database! Error: " + ex.getMessage());
-        	  ex.printStackTrace();
+        	  EnderChest.log.log(Level.SEVERE, "Could not connect to mysql database!", e);
           }
 	}
 	
 	public void setupTables() {
 		if (conn != null) {
-			PreparedStatement query1 = null;
-			try {
-				String data = "CREATE TABLE IF NOT EXISTS `" + enderchest.getConfigHandler().getString("database.mysql.tableName") + "` (id int(10) AUTO_INCREMENT, player_uuid varchar(50) NOT NULL UNIQUE, player_name varchar(50) NOT NULL, enderchest_data LONGTEXT NOT NULL, size int(3) NOT NULL, last_seen varchar(30) NOT NULL, PRIMARY KEY(id));";
-		        query1 = conn.prepareStatement(data);
+			String data = "CREATE TABLE IF NOT EXISTS `" + enderchest.getConfigHandler().getString("database.mysql.tableName") + "` (id int(10) AUTO_INCREMENT, player_uuid varchar(50) NOT NULL UNIQUE, player_name varchar(50) NOT NULL, enderchest_data LONGTEXT NOT NULL, size int(3) NOT NULL, last_seen varchar(30) NOT NULL, PRIMARY KEY(id));";
+			try (PreparedStatement query1 = conn.prepareStatement(data)) {
 		        query1.execute();
 		        tablesChecked = true;
-			} catch (Exception e) {
-				EnderChest.log.severe("Error creating tables! Error: " + e.getMessage());
-				e.printStackTrace();
-			} finally {
-				try {
-					if (query1 != null) {
-						query1.close();
-					}
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
+			} catch (SQLException e) {
+				EnderChest.log.log(Level.SEVERE, "Error creating tables!", e);
 			}
 		}
 	}
@@ -126,7 +103,7 @@ public class MysqlSetup {
 		checkConnection();
 		return conn;
 	}
-	
+
 	public void closeConnection() {
 		try {
 			EnderChest.log.info("Closing database connection...");
@@ -135,7 +112,7 @@ public class MysqlSetup {
 				conn = null;
 			}
 		} catch (SQLException e) {
-			e.printStackTrace();
+			EnderChest.log.log(Level.SEVERE, "Failed closing database connection!", e);
 		}
 	}
 	
@@ -149,7 +126,7 @@ public class MysqlSetup {
 				EnderChest.log.warning("Database connection failed. Reconnecting...");
 				conn = null;
 				connectToDatabase();
-			} else if (conn.isClosed() == true) {
+			} else if (conn.isClosed()) {
 				EnderChest.log.warning("Database connection failed. Reconnecting...");
 				conn = null;
 				connectToDatabase();
@@ -158,65 +135,49 @@ public class MysqlSetup {
 			EnderChest.log.severe("Error re-connecting to the database! Error: " + e.getMessage());
 		}
 	}
-	
-	public boolean closeDatabase() {
+
+	/**
+	 * @deprecated use {@link #close()}
+	 */
+	@Deprecated
+	public void closeDatabase() {
+		this.close();
+	}
+
+	@Override
+	public void close() {
 		try {
 			conn.close();
 			conn = null;
-			return true;
 		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		return false;
-	}
-	
-	private void updateTables() {
-		if (conn != null) {
-			DatabaseMetaData md = null;
-	    	ResultSet rs1 = null;
-	    	ResultSet rs2 = null;
-	    	PreparedStatement query1 = null;
-	    	PreparedStatement query2 = null;
-			try {
-				md = conn.getMetaData();
-			    rs1 = md.getColumns(null, null, enderchest.getConfigHandler().getString("database.mysql.tableName"), "enderchest");
-			    if (rs1.next()) {
-			        String data1 = "ALTER TABLE `" + enderchest.getConfigHandler().getString("database.mysql.tableName") + "` CHANGE COLUMN enderchest enderchest_data LONGTEXT NOT NULL;";
-			        query1 = conn.prepareStatement(data1);
-			        query1.execute();
-			    } else {
-			    	rs2 = md.getColumns(null, null, enderchest.getConfigHandler().getString("database.mysql.tableName"), "enderchest_data");
-			    	if (rs2.next()) {
-			    		if (rs2.getString("TYPE_NAME").matches("VARCHAR")) {
-		            		String data2 = "ALTER TABLE `" + enderchest.getConfigHandler().getString("database.mysql.tableName") + "` MODIFY enderchest_data LONGTEXT NOT NULL;";
-					        query2 = conn.prepareStatement(data2);
-					        query2.execute();
-		            	}
-			    	}
-			    }    
-			    
-			} catch (Exception e) {
-				EnderChest.log.warning("Error on table update! Error: " + e.getMessage());
-				e.printStackTrace();
-			} finally {
-				try {
-	    			if (query1 != null) {
-	    				query1.close();
-	    			}
-	    			if (query2 != null) {
-	    				query2.close();
-	    			}
-	    			if (rs1 != null) {
-	    				rs1.close();
-	    			}
-	    			if (rs2 != null) {
-	    				rs2.close();
-	    			}
-	    		} catch (Exception e) {
-	    			e.printStackTrace();
-	    		}
-			}
+			EnderChest.log.log(Level.SEVERE, "Failed shutting down database connection!", e);
 		}
 	}
 
+	private void updateTables() {
+		if (conn != null) {
+			try {
+				DatabaseMetaData md = conn.getMetaData();
+				try (ResultSet rs1 = md.getColumns(null, null, enderchest.getConfigHandler().getString("database.mysql.tableName"), "enderchest")) {
+					if (rs1.next()) {
+						String data1 = "ALTER TABLE `" + enderchest.getConfigHandler().getString("database.mysql.tableName") + "` CHANGE COLUMN enderchest enderchest_data LONGTEXT NOT NULL;";
+						try (PreparedStatement query1 = conn.prepareStatement(data1)) {
+							query1.execute();
+						}
+					} else {
+						try (ResultSet rs2 = md.getColumns(null, null, enderchest.getConfigHandler().getString("database.mysql.tableName"), "enderchest_data")) {
+							if (rs2.next() && rs2.getString("TYPE_NAME").matches("VARCHAR")) {
+								String data2 = "ALTER TABLE `" + enderchest.getConfigHandler().getString("database.mysql.tableName") + "` MODIFY enderchest_data LONGTEXT NOT NULL;";
+								try (PreparedStatement query2 = conn.prepareStatement(data2)) {
+									query2.execute();
+								}
+							}
+						}
+					}
+				}
+			} catch (SQLException e) {
+				EnderChest.log.log(Level.WARNING, "Error on table update!", e);
+			}
+		}
+	}
 }
