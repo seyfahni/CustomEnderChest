@@ -41,19 +41,19 @@ enderChestTitle:
     enderChestName: '&5&lEnderChest &7- %level'
     #The place holder  %player  will be replaced by player's name.
     #The  %level  place holder replace text below. So you can customize each enderchest title by enderchest size.
-   
-    #For 9 slots enderchest.
-    level0: '&dLevel 0'
-    #For 18 slots enderchest.
-    level1: '&dLevel 1'
-    #For 27 slots enderchest.
-    level2: '&dLevel 2'
-    #For 36 slots enderchest.
-    level3: '&5Level 3'
-    #For 45 slots enderchest.
-    level4: '&5Level 4'
-    #For 54 slots enderchest.
-    level5: '&5Level 5'
+    level:
+        #For 9 slots enderchest.
+        0: '&dLevel 0'
+        #For 18 slots enderchest.
+        1: '&dLevel 1'
+        #For 27 slots enderchest.
+        2: '&dLevel 2'
+        #For 36 slots enderchest.
+        3: '&5Level 3'
+        #For 45 slots enderchest.
+        4: '&5Level 4'
+        #For 54 slots enderchest.
+        5: '&5Level 5'
 
 #Chat messages. Supports color and format codes. 
 chatMessages:
