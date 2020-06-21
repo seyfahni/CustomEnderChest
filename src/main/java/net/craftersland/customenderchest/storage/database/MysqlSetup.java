@@ -146,11 +146,13 @@ public class MysqlSetup implements DatabaseSetup {
 
 	@Override
 	public void close() {
-		try {
-			conn.close();
-			conn = null;
-		} catch (SQLException e) {
-			EnderChest.log.log(Level.SEVERE, "Failed shutting down database connection!", e);
+		if (conn != null) {
+			try {
+				conn.close();
+				conn = null;
+			} catch (SQLException e) {
+				EnderChest.log.log(Level.SEVERE, "Failed shutting down database connection!", e);
+			}
 		}
 	}
 
