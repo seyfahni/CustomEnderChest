@@ -11,10 +11,7 @@ import net.craftersland.customenderchest.EnderChest;
 
 public class ModdedSerializer {
 	
-	//private EnderChest pl;
-	
-	public ModdedSerializer(EnderChest pl) {
-		//this.pl = pl;
+	public ModdedSerializer() {
 	}
 	
 	public String toBase64(ItemStack[] itemStacks) throws IOException {

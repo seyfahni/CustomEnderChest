@@ -143,7 +143,7 @@ public class EnderChest extends JavaPlugin {
 			if (configHandler.getBoolean("settings.modded-NBT-data-support")) {
 				if (configHandler.getString("database.typeOfDatabase").equalsIgnoreCase("mysql")) {
 					if (Bukkit.getPluginManager().getPlugin("ProtocolLib") != null) {
-						ms = new ModdedSerializer(this);
+						ms = new ModdedSerializer();
 						log.info("ProtocolLib dependency found. Modded NBT data support is enabled!");
 			        } else {
 			        	log.warning("ProtocolLib dependency not found!!! Modded NBT data support is disabled!");
