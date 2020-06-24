@@ -19,10 +19,11 @@ public class GzipItemSerializerDecorator extends ItemSerializerDecorator {
 
     @Override
     public byte[] serializeItem(ItemStack itemStackObject) throws SerializationException {
-        try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-             GZIPOutputStream dataOutput = new GZIPOutputStream(outputStream)) {
-            byte[] uncompressed = super.serializeItem(itemStackObject);
-            dataOutput.write(uncompressed);
+        byte[] uncompressed = super.serializeItem(itemStackObject);
+        try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
+             try (GZIPOutputStream dataOutput = new GZIPOutputStream(outputStream)) {
+                 dataOutput.write(uncompressed);
+             } // when dataOutput is closed it writes additional end-of-file data
             return outputStream.toByteArray();
         } catch (IOException ioException) {
             throw new SerializationException("could not gzip compress item", ioException);
