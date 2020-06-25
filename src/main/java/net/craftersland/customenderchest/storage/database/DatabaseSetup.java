@@ -7,6 +7,8 @@ public interface DatabaseSetup extends AutoCloseable {
 
     Connection getConnection() throws SQLException;
 
+    String getTablePrefix();
+
     @Override
     void close();
 }

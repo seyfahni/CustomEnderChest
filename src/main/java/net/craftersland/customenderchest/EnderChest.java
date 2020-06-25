@@ -10,11 +10,11 @@ import java.util.regex.Pattern;
 
 import net.craftersland.customenderchest.commands.FileToMysqlCmd;
 import net.craftersland.customenderchest.sound.*;
-import net.craftersland.customenderchest.storage.FlatFileStorage;
+import net.craftersland.customenderchest.storage.LegacyFlatFileStorage;
 import net.craftersland.customenderchest.storage.database.DatabaseSetup;
-import net.craftersland.customenderchest.storage.database.MysqlSetup;
-import net.craftersland.customenderchest.storage.MysqlStorage;
-import net.craftersland.customenderchest.storage.StorageInterface;
+import net.craftersland.customenderchest.storage.database.LegacyMysqlSetup;
+import net.craftersland.customenderchest.storage.LegacyMysqlStorage;
+import net.craftersland.customenderchest.storage.LegacyStorageInterface;
 import net.craftersland.customenderchest.utils.EnderChestUtils;
 import net.craftersland.customenderchest.utils.ModdedSerializer;
 
@@ -35,7 +35,7 @@ public class EnderChest extends JavaPlugin {
 	public static String pluginName = "CustomEnderChest";
 	
 	private static ConfigHandler configHandler;
-	private static StorageInterface storageInterface;
+	private static LegacyStorageInterface storageInterface;
 	private static EnderChestUtils enderchestUtils;
 	private static DataHandler dH;
 	private static DatabaseSetup databaseSetup;
@@ -51,15 +51,15 @@ public class EnderChest extends JavaPlugin {
 	        enderchestUtils = new EnderChestUtils(this);
 	        if (configHandler.getString("database.typeOfDatabase").equalsIgnoreCase("mysql")) {
 	        	log.info("Using MySQL database for data.");
-	        	databaseSetup = new MysqlSetup(this);
-	        	storageInterface = new MysqlStorage(this);
+	        	databaseSetup = new LegacyMysqlSetup(this);
+	        	storageInterface = new LegacyMysqlStorage(this);
 	        } else {
 	        	log.info("Using FlatFile system for data. IMPORTANT! We recommend MySQL.");
 	        	File pluginFolder = new File("plugins" + System.getProperty("file.separator") + pluginName + System.getProperty("file.separator") + "PlayerData");
 	    		if (!pluginFolder.exists()) {
 	        		pluginFolder.mkdir();
 	        	}
-		      	storageInterface = new FlatFileStorage(this);	
+		      	storageInterface = new LegacyFlatFileStorage(this);
 	        }
 	        dH = new DataHandler(this);
 	        if (configHandler.getBoolean("settings.disable-sounds")) {
@@ -157,7 +157,7 @@ public class EnderChest extends JavaPlugin {
 		public ConfigHandler getConfigHandler() {
 			return configHandler;
 		}
-		public StorageInterface getStorageInterface() {
+		public LegacyStorageInterface getStorageInterface() {
 			return storageInterface;
 		}
 		public EnderChestUtils getEnderChestUtils() {
