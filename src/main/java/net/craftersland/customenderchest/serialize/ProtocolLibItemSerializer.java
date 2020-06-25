@@ -24,9 +24,9 @@ public class ProtocolLibItemSerializer implements ItemSerializer {
 
     @Override
     public byte[] serializeItem(ItemStack itemStackObject) throws SerializationException {
-        try {
-            ByteArrayOutputStream dataStream = new ByteArrayOutputStream();
-            streamSerializer.serializeItemStack(new DataOutputStream(dataStream), itemStackObject);
+        try (ByteArrayOutputStream dataStream = new ByteArrayOutputStream();
+             DataOutputStream outputStream = new DataOutputStream(dataStream)) {
+            streamSerializer.serializeItemStack(outputStream, itemStackObject);
             return dataStream.toByteArray();
         } catch (IOException ioException) {
             throw new SerializationException("could not serialize item", ioException);
