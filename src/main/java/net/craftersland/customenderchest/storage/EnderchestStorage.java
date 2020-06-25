@@ -17,7 +17,7 @@ public interface EnderchestStorage {
         deleteEnderchestItem(enderchestData.getPlayer(), enderchestData.getSlot());
     }
 
-    void deleteEnderchestItem(PlayerData playerData, int slot) throws StorageException;
+    void deleteEnderchestItem(PlayerData player, int slot) throws StorageException;
 
-    int deletePlayersEnderchestItems(PlayerData playerData) throws StorageException;
+    int deletePlayersEnderchestItems(PlayerData player) throws StorageException;
 }
