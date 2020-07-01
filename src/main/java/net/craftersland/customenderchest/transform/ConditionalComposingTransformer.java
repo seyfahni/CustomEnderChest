@@ -2,6 +2,14 @@ package net.craftersland.customenderchest.transform;
 
 import java.util.function.Predicate;
 
+/**
+ * Transformer that chooses a transformation path based on a condition. On backwards transformation every branch is
+ * tried out, this behaviour might not always be desirable and can cause performance issues but will be sufficient in
+ * most cases.
+ *
+ * @param <T> the input data type
+ * @param <R> the output data type
+ */
 public class ConditionalComposingTransformer<T, R> implements DataTransformation<T, R> {
 
     private final Predicate<T> condition;

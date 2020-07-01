@@ -16,7 +16,7 @@ public class PaperItemSerializer implements DataTransformation<ItemStack, byte[]
 
     @Override
     public ItemStack transformBack(byte[] element) {
-        // TODO: Investigate what exception is thrown on invalid data and wrap it inside a SerializationException
+        // TODO: Investigate what exception is thrown on invalid data and wrap it inside a DataTransformationException
         return ItemStack.deserializeBytes(element);
     }
 }

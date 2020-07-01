@@ -1,5 +1,8 @@
 package net.craftersland.customenderchest.transform;
 
+/**
+ * Thrown whenever a data transformation fails.
+ */
 public class DataTransformationException extends Exception {
 
     private static final long serialVersionUID = 8904416848594276358L;

@@ -11,8 +11,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
 /**
- * Basic ItemSerializer implementation that uses the basic Bukkit API. It should always work but may not encode
- * non-vanilla item data like custom NBT or modded items.
+ * Data transformer implementation that uses the basic Bukkit API to serialize items. It should always work but may not
+ * encode non-vanilla item data like custom NBT or modded items.
  */
 public class BukkitItemSerializer implements DataTransformation<ItemStack, byte[]> {
 

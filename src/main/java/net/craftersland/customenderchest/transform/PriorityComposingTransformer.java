@@ -1,5 +1,12 @@
 package net.craftersland.customenderchest.transform;
 
+/**
+ * Transformer that tries every provided transformation in the given order and returning the result of the first one
+ * that worked. Can be used to create fallback transformers.
+ *
+ * @param <T> the input data type
+ * @param <R> the output data type
+ */
 public class PriorityComposingTransformer<T, R> implements DataTransformation<T, R> {
 
     DataTransformation<T, R>[] dataTransformers;
