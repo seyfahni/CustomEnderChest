@@ -16,7 +16,7 @@ import net.craftersland.customenderchest.storage.database.LegacyMysqlSetup;
 import net.craftersland.customenderchest.storage.LegacyMysqlStorage;
 import net.craftersland.customenderchest.storage.LegacyStorageInterface;
 import net.craftersland.customenderchest.utils.EnderChestUtils;
-import net.craftersland.customenderchest.utils.ModdedSerializer;
+import net.craftersland.customenderchest.legacy.ModdedSerializer;
 
 import org.bukkit.Bukkit;
 import org.bukkit.event.HandlerList;
@@ -124,7 +124,7 @@ public class EnderChest extends JavaPlugin {
 					is13Server = false;
 					log.info("Compatible server version detected: " + version);
 					return true;
-				} else if (minor < 16) {
+				} else if (minor < 17) {
 					is19Server = true;
 					is13Server = true;
 					log.info("Compatible server version detected: " + version);

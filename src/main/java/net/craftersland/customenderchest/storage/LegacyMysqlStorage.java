@@ -12,7 +12,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 import net.craftersland.customenderchest.EnderChest;
-import net.craftersland.customenderchest.utils.EncodingUtil;
+import net.craftersland.customenderchest.legacy.EncodingUtil;
 
 public class LegacyMysqlStorage implements LegacyStorageInterface {
 
