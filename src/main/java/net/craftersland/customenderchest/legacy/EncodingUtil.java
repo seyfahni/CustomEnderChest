@@ -1,4 +1,4 @@
-package net.craftersland.customenderchest.utils;
+package net.craftersland.customenderchest.legacy;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -15,7 +15,11 @@ import org.bukkit.util.io.BukkitObjectOutputStream;
 import org.yaml.snakeyaml.external.biz.base64Coder.Base64Coder;
 
 public class EncodingUtil {
-	
+
+    /**
+     * @deprecated old method for serialization
+     */
+    @Deprecated
 	public static String toBase64(Inventory inventory) throws IllegalStateException, IOException {
 		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         BukkitObjectOutputStream dataOutput = new BukkitObjectOutputStream(outputStream);

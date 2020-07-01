@@ -16,7 +16,7 @@ import net.craftersland.customenderchest.storage.database.MysqlSetup;
 import net.craftersland.customenderchest.storage.MysqlStorage;
 import net.craftersland.customenderchest.storage.StorageInterface;
 import net.craftersland.customenderchest.utils.EnderChestUtils;
-import net.craftersland.customenderchest.utils.ModdedSerializer;
+import net.craftersland.customenderchest.legacy.ModdedSerializer;
 
 import org.bukkit.Bukkit;
 import org.bukkit.event.HandlerList;
