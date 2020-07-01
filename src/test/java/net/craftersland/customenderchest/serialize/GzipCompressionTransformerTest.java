@@ -17,7 +17,7 @@ class GzipCompressionTransformerTest {
         GzipCompressionTransformer gzipDecorator = new GzipCompressionTransformer();
 
         byte[] gzipped = gzipDecorator.transform(testBinary);
-        assertEquals(testBinary, gzipDecorator.transformBack(gzipped));
+        assertArrayEquals(testBinary, gzipDecorator.transformBack(gzipped));
     }
 
     @Test
