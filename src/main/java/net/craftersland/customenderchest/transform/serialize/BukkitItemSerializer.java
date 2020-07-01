@@ -1,5 +1,7 @@
-package net.craftersland.customenderchest.serialize;
+package net.craftersland.customenderchest.transform.serialize;
 
+import net.craftersland.customenderchest.transform.DataTransformation;
+import net.craftersland.customenderchest.transform.DataTransformationException;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.io.BukkitObjectInputStream;
 import org.bukkit.util.io.BukkitObjectOutputStream;
@@ -12,26 +14,26 @@ import java.io.IOException;
  * Basic ItemSerializer implementation that uses the basic Bukkit API. It should always work but may not encode
  * non-vanilla item data like custom NBT or modded items.
  */
-public class BukkitItemSerializer implements ItemSerializer {
+public class BukkitItemSerializer implements DataTransformation<ItemStack, byte[]> {
 
     @Override
-    public byte[] serializeItem(ItemStack itemStackObject) throws SerializationException {
+    public byte[] transform(ItemStack element) throws DataTransformationException {
         try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
              BukkitObjectOutputStream dataOutput = new BukkitObjectOutputStream(outputStream)) {
-            dataOutput.writeObject(itemStackObject);
+            dataOutput.writeObject(element);
             return outputStream.toByteArray();
         } catch (IOException ioException) {
-            throw new SerializationException("could not serialize item", ioException);
+            throw new DataTransformationException("could not serialize item", ioException);
         }
     }
 
     @Override
-    public ItemStack deserializeItem(byte[] itemStackBinary) throws SerializationException {
-        try (ByteArrayInputStream inputStream = new ByteArrayInputStream(itemStackBinary);
+    public ItemStack transformBack(byte[] element) throws DataTransformationException {
+        try (ByteArrayInputStream inputStream = new ByteArrayInputStream(element);
              BukkitObjectInputStream dataInput = new BukkitObjectInputStream(inputStream)) {
             return (ItemStack) dataInput.readObject();
         } catch (IOException | ClassNotFoundException | ClassCastException exception) {
-            throw new SerializationException("could not deserialize item", exception);
+            throw new DataTransformationException("could not deserialize item", exception);
         }
     }
 }
