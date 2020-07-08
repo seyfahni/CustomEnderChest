@@ -7,6 +7,10 @@ import org.bukkit.inventory.ItemStack;
 
 import com.comphenix.protocol.utility.StreamSerializer;
 
+/**
+ * @deprecated old class for serialization
+ */
+@Deprecated
 public class ModdedSerializer {
 
 	private final StreamSerializer streamSerializer;
@@ -35,7 +39,11 @@ public class ModdedSerializer {
 	    }
 	    return stringBuilder.toString();
     }
-	
+
+	/**
+	 * @deprecated old method for deserialization
+	 */
+	@Deprecated
 	public ItemStack[] fromBase64(String data) throws IOException {
 		String[] strings = data.split(";");
 	    ItemStack[] itemStacks = new ItemStack[strings.length];
