@@ -101,7 +101,7 @@ public class EnderChest extends JavaPlugin {
 				is19Server = true;
 				is13Server = true;
 				log.warning("Unable to identify server version: " + version);
-				log.warning("Attempting to run in 1.13 - 1.15 API mode.");
+				log.warning("Attempting to run in 1.13 - 1.16 API mode.");
 				return false;
 			}
 			int major = Integer.parseInt(versionMatcher.group("major"));
@@ -135,7 +135,7 @@ public class EnderChest extends JavaPlugin {
 			is19Server = true;
 			is13Server = true;
 			log.warning("Unknown server version detected: " + version);
-			log.warning("Attempting to run in 1.13 - 1.15 API mode.");
+			log.warning("Attempting to run in 1.13 - 1.16 API mode.");
 		    return false;
 		}
 		
